@@ -26,6 +26,9 @@ r2 <- reclassify(r, rclmat, right=NA)
 o.simp <- subset(o, select=c(Taxon.Scie, Gatherin26, Gatherin27, Gatherin28, Gatherin29))
 o.points <- SpatialPoints(cbind((o.simp$Gatherin29+o.simp$Gatherin28)/2, (o.simp$Gatherin27+o.simp$Gatherin26)/2))
 
+rand1 <- runif(50,1,1000)
+rand2 <- runif(50,1,1000)
+
 ########################################################################################################
 ## process the first 50 occurrences by sampling the same habitat within a 1000 meter radius 100 times ##
 ########################################################################################################
@@ -77,11 +80,12 @@ par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-t.test(prox, unlist(sim))
+r <- t.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides")
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides", xlab="Distance from Road (meters)", sub=paste("Welch 2-sample T-test:", t$p.value))
 lines(density(unlist(sim)), col="red")
+mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
 
 #######################################################################################
 ## process the first 50 occurrences that do not occur in an urban classified habitat ##
@@ -134,8 +138,9 @@ par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Restricted)", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-t.test(prox, unlist(sim))
+5 <- t.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)")
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)", xlab="Distance from Road (meters)", sub=paste("Welch 2-sample T-test:", t$p.value))
 lines(density(unlist(sim)), col="red")
+mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
