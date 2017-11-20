@@ -74,10 +74,14 @@ for(i in 1:50){
 ## plot the two datasets for comparison ##
 
 par(mfrow=c(1,2))
-hist(prox, main="Original Proximity to Roadsides")
-hist(unlist(sim), main="Proximity of Simulated Data to Roadsides")
+hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
+hist(unlist(sim), main="Proximity of Simulated Data to Roadsides", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-ks.test(prox, unlist(sim), exact = TRUE)
+t.test(prox, unlist(sim))
+
+par(mfrow=c(1,1))
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides")
+lines(density(unlist(sim)), col="red")
 
 #######################################################################################
 ## process the first 50 occurrences that do not occur in an urban classified habitat ##
@@ -127,7 +131,11 @@ for(i in 1:50){
 }
 
 par(mfrow=c(1,2))
-hist(prox, main="Original Proximity to Roadsides")
-hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Restricted)")
+hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
+hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Restricted)", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-ks.test(prox, unlist(sim), exact = TRUE)
+t.test(prox, unlist(sim))
+
+par(mfrow=c(1,1))
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)")
+lines(density(unlist(sim)), col="red")
