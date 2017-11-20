@@ -80,10 +80,10 @@ par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-r <- t.test(prox, unlist(sim))
+t <- ks.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides", xlab="Distance from Road (meters)", sub=paste("Welch 2-sample T-test:", t$p.value))
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides", xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
 lines(density(unlist(sim)), col="red")
 mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
 
@@ -138,9 +138,9 @@ par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides", col="gray", border="white", breaks=20, ylim=c(0,20), xlim=c(0,8000))
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Restricted)", col="gray", border="white", breaks=20, xlim=c(0,8000))
 
-5 <- t.test(prox, unlist(sim))
+t <- ks.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)", xlab="Distance from Road (meters)", sub=paste("Welch 2-sample T-test:", t$p.value))
+plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)", xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
 lines(density(unlist(sim)), col="red")
 mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
