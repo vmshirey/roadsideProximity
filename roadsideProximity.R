@@ -57,10 +57,14 @@ for(i in 1:50){
     
     print(paste("Iteration: ", i, ".", j, " | Original: ", e, " | Simulated: ", e2, sep=""))
     
-    if(e == e2){
+    if(e == e2 && !is.na(e2)){
       
       prox.sim[j] <- extract(road, p)
       j = j+1
+    }
+    if(is.na(e2)){
+      print("BAD SAMPLE: Simulation fell off the Earth! Skipping...")
+      j = 999
     }
   }
   sim[[i]] <- prox.sim
@@ -72,6 +76,8 @@ for(i in 1:50){
 par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides")
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides")
+
+ks.test(prox, unlist(sim), exact = TRUE)
 
 #######################################################################################
 ## process the first 50 occurrences that do not occur in an urban classified habitat ##
@@ -106,9 +112,13 @@ for(i in 1:50){
       
       print(paste("Iteration: ", i, ".", j, " | Original: ", e, " | Simulated: ", e2, sep=""))
       
-      if(e == e2){
+      if(e == e2  && !is.na(e2)){
         prox.sim[j] <- extract(road, p)
         j = j+1
+      }
+      if(is.na(e2)){
+        print("BAD SAMPLE: Simulation fell off the Earth! Skipping...")
+        j = 999
       }
     }
     sim[[i]] <- prox.sim
@@ -119,3 +129,5 @@ for(i in 1:50){
 par(mfrow=c(1,2))
 hist(prox, main="Original Proximity to Roadsides")
 hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Restricted)")
+
+ks.test(prox, unlist(sim), exact = TRUE)
