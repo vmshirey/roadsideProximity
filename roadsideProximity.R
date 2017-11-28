@@ -9,6 +9,7 @@ library(rgeos)
 library(raster)
 
 set.seed(11082017)
+iterations <- 5
 
 ## read in occurrence data and raster files ##
 
@@ -26,11 +27,11 @@ r2 <- reclassify(r, rclmat, right=NA)
 o.simp <- subset(o, select=c(Taxon.Scie, Gatherin26, Gatherin27, Gatherin28, Gatherin29))
 o.points <- SpatialPoints(cbind((o.simp$Gatherin29+o.simp$Gatherin28)/2, (o.simp$Gatherin27+o.simp$Gatherin26)/2))
 
-rand1 <- runif(50,1,1000)
-rand2 <- runif(50,1,1000)
+rand1 <- sample(1:nrow(o), iterations, replace=FALSE)
+rand2 <- sample(1:nrow(o), iterations, replace=FALSE)
 
 ########################################################################################################
-## process the first 50 occurrences by sampling the same habitat within a 1000 meter radius 100 times ##
+## process the occurrences by sampling the same habitat within a 1000 meter radius 100 times ##
 ########################################################################################################
 
 prox <- vector()
@@ -38,14 +39,19 @@ prox.sim <- vector()
 sim <- list()
 j = 0
 
-for(i in 1:50){
+numGreater <- 0
+numCloser <- 0
+numEqual <- 0
+
+for(i in 1:iterations){
   
-  p <- o.points[i,]
+  p <- o.points[rand1[i],]
   prox[i] <- extract(road, p)
   
+  e <- extract(r2, p)
+  
   while(j < 101){
-    e <- extract(r2, p)
-    
+
     x.f <- runif(1, -1000.0, 1000.0)
     y.f <- runif(1, -1000.0, 1000.0)
     
@@ -83,12 +89,22 @@ hist(unlist(sim), main="Proximity of Simulated Data to Roadsides", col="gray", b
 t <- ks.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides", xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
+plot(density(prox), main=paste("Density of Occurrence Record Distances to Roadsides (", o[1,]$Taxon.Scie, ")", sep=""), xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
 lines(density(unlist(sim)), col="red")
-mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
+mtext(paste("Sample Mean:", round(mean(prox), digits=2), "  |    Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
+
+## compute summary statistics for this run ##
+
+for(k in 1:length(sim)){numGreater = numGreater + sum(sim[[k]] > prox[k])}
+for(k in 1:length(sim)){numCloser = numCloser + sum(sim[[k]] < prox[k])}
+for(k in 1:length(sim)){numEqual = numEqual + sum(sim[[k]] == prox[k])}
+
+paste("For this simulation", numGreater, "simulations of", i*iterations, "simulations were farther from roadsides than the original data.")
+paste("For this simulation", numCloser, "simulations of", i*iterations, "simulations were closer to roadsides than the original data.")
+paste("For this simulation", numEqual, "simulations of", i*iterations, "simulations were equal distance to roadsides than the original data.")
 
 #######################################################################################
-## process the first 50 occurrences that do not occur in an urban classified habitat ##
+## process the occurrences that do not occur in an urban classified habitat ##
 #######################################################################################
 
 prox <- vector()
@@ -96,16 +112,19 @@ prox.sim <- vector()
 sim <- list()
 j = 0
 
-for(i in 1:50){
+numGreater <- 0
+numCloser <- 0
+numEqual <- 0
+
+for(i in 1:iterations){
   
-  p <- o.points[i,]
+  p <- o.points[rand2[i],]
   prox[i] <- extract(road, p)
   e <- extract(r2, p)
   
   if(e > 4){
     while(j < 101){
-      
-      
+
       x.f <- runif(1, -1000.0, 1000.0)
       y.f <- runif(1, -1000.0, 1000.0)
       
@@ -141,6 +160,18 @@ hist(unlist(sim), main="Proximity of Simulated Data to Roadsides (Land Class Res
 t <- ks.test(prox, unlist(sim))
 
 par(mfrow=c(1,1))
-plot(density(prox), main="Density of Occurrence Record Distances to Roadsides (Land Class Restricted)", xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
+plot(density(prox), main=paste("Density of Restricted Occurrence Record Distances to Roadsides (", o[1,]$Taxon.Scie, ")", sep=""), xlab="Distance from Road (meters)", sub=paste("Two Sample Kolmogorov-Smirnov Test:", t$p.value))
 lines(density(unlist(sim)), col="red")
-mtext(paste("Sample Mean:", round(mean(prox), digits=2), "Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
+mtext(paste("Sample Mean:", round(mean(prox), digits=2), "  |    Simulation Mean:", round(mean(unlist(sim)), digits=2)), side=4)
+
+## compute summary statistics for this run ##
+
+for(k in 1:length(sim)){numGreater = numGreater + sum(sim[[k]] > prox[k])}
+for(k in 1:length(sim)){numCloser = numCloser + sum(sim[[k]] < prox[k])}
+for(k in 1:length(sim)){numEqual = numEqual + sum(sim[[k]] == prox[k])}
+
+paste("For this simulation", numGreater, "simulations of", i*iterations, "simulations were farther from roadsides than the original data.")
+paste("For this simulation", numCloser, "simulations of", i*iterations, "simulations were closer to roadsides than the original data.")
+paste("For this simulation", numEqual, "simulations of", i*iterations, "simulations were equal distance to roadsides than the original data.")
+
+
